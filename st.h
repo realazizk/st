@@ -20,6 +20,10 @@
 #define TRUECOLOR(r,g,b)	(1 << 24 | (r) << 16 | (g) << 8 | (b))
 #define IS_TRUECOL(x)		(1 << 24 & (x))
 
+#define TLINE(y)		((y) < term.scr ? term.hist[((y) + term.histi - term.scr + histsize + 1) % histsize] : term.line[(y) - term.scr])
+
+#define histsize 2000
+
 enum glyph_attribute {
 	ATTR_NULL       = 0,
 	ATTR_BOLD       = 1 << 0,
@@ -109,24 +113,31 @@ typedef struct {
 } TCursor;
 
 /* Internal representation of the screen */
+
 typedef struct {
-	int row;      /* nb row */
-	int col;      /* nb col */
-	Line *line;   /* screen */
-	Line *alt;    /* alternate screen */
-	int *dirty;  /* dirtyness of lines */
-	GlyphFontSpec *specbuf; /* font spec buffer used for rendering */
-	TCursor c;    /* cursor */
-	int top;      /* top    scroll limit */
-	int bot;      /* bottom scroll limit */
-	int mode;     /* terminal mode flags */
-	int esc;      /* escape state flags */
-	char trantbl[4]; /* charset table translation */
-	int charset;  /* current charset */
-	int icharset; /* selected charset for sequence */
-	int numlock; /* lock numbers in keyboard */
-	int *tabs;
+       int row;      /* nb row */
+       int col;      /* nb col */
+       Line *line;   /* screen */
+       Line *alt;    /* alternate screen */
+       Line hist[histsize]; /* history buffer */
+       int histi;    /* history index */
+       int scr;      /* scroll back */
+       int *dirty;  /* dirtyness of lines */
+       XftGlyphFontSpec *specbuf; /* font spec buffer used for rendering */
+       TCursor c;    /* cursor */
+       int top;      /* top    scroll limit */
+       int bot;      /* bottom scroll limit */
+       int mode;     /* terminal mode flags */
+       int esc;      /* escape state flags */
+       char trantbl[4]; /* charset table translation */
+       int charset;  /* current charset */
+       int icharset; /* selected charset for sequence */
+       int numlock; /* lock numbers in keyboard */
+       int *tabs;
 } Term;
+
+
+
 
 /* Purely graphic info */
 typedef struct {
@@ -173,6 +184,14 @@ typedef union {
 	float f;
 	const void *v;
 } Arg;
+
+typedef struct {
+        uint b;
+        uint mask;
+        void (*func)(const Arg *);
+        const Arg arg;
+} MouseKey;
+
 
 typedef struct {
 	uint mod;
@@ -265,6 +284,9 @@ extern unsigned int defaultattr;
 extern MouseShortcut mshortcuts[];
 extern size_t mshortcutslen;
 extern Shortcut shortcuts[];
+extern MouseKey mkeys[];
+extern size_t mkeyslen;
+
 extern size_t shortcutslen;
 extern uint forceselmod;
 extern uint selmasks[];

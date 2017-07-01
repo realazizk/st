@@ -248,6 +248,7 @@ bpress(XEvent *e)
 {
 	struct timespec now;
 	MouseShortcut *ms;
+        MouseKey *mk;
 
 	if (IS_SET(MODE_MOUSE) && !(e->xbutton.state & forceselmod)) {
 		mousereport(e);
@@ -261,6 +262,14 @@ bpress(XEvent *e)
 			return;
 		}
 	}
+
+        for (mk = mkeys; mk < mkeys + mkeyslen; mk++) {
+                if (e->xbutton.button == mk->b
+                    && match(mk->mask, e->xbutton.state)) {
+                        mk->func(&mk->arg);
+                        return;
+                }
+        }
 
 	if (e->xbutton.button == Button1) {
 		clock_gettime(CLOCK_MONOTONIC, &now);
@@ -1412,11 +1421,11 @@ drawregion(int x1, int y1, int x2, int y2)
 		term.dirty[y] = 0;
 
 		specs = term.specbuf;
-		numspecs = xmakeglyphfontspecs(specs, &term.line[y][x1], x2 - x1, x1, y);
+                numspecs = xmakeglyphfontspecs(specs, &TLINE(y)[x1], x2 - x1, x1, y);
 
 		i = ox = 0;
 		for (x = x1; x < x2 && i < numspecs; x++) {
-			new = term.line[y][x];
+                        new = TLINE(y)[x];
 			if (new.mode == ATTR_WDUMMY)
 				continue;
 			if (ena_sel && selected(x, y))
@@ -1436,7 +1445,8 @@ drawregion(int x1, int y1, int x2, int y2)
 		if (i > 0)
 			xdrawglyphfontspecs(specs, base, i, ox, y);
 	}
-	xdrawcursor();
+        if (term.scr == 0)
+                xdrawcursor();
 }
 
 void
