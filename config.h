@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-char font[] = "Fixed:pixelsize=21:antialias=true:autohint=true";
+char font[] = "DejaVu Sans Mono:pixelsize=15:antialias=false:autohint=false";
 int borderpx = 2;
 #define histsize 2000
 
@@ -85,34 +85,38 @@ static unsigned int tabspaces = 8;
 
 /* Terminal colors (16 first used in escape sequence) */
 const char *colorname[] = {
-	"#222222",
-	"#aa4450",
-	"#719611",
-	"#ff9800",
-	"#6688aa",
-	"#8f6f8f",
-	"#528b8b",
-	"#d3d3d3",
+	"#171717",
+	"#CC0000",
+	"#4E9A06",
+	"#C4A000",
+	"#3465A4",
+	"#75507B",
+	"#06989A",
+	"#D3D7CF",
 
-	"#272822",
-	"#ff6a6a",
-	"#b1d631",
-	"#87875f",
-	"#90b0d1",
-	"#8181a6",
-	"#87ceeb",
-	"#c1cdc1"
+	"#555753",
+	"#EF2929",
+	"#8AE234",
+	"#FCE94F",
+	"#729FCF",
+	"#AD7FA8",
+	"#34E2E2",
+	"#EEEEEC",
+
+	[255] = 0,
+
+	"#cccccc",
 };
 
 
 /*
  * Default colors (colorname index)
- * foreground, background, cursor
+ * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 15;
+unsigned int defaultfg = 7;
 unsigned int defaultbg = 0;
-unsigned int defaultcs = 15;
-unsigned int defaultrcs = 15;
+unsigned int defaultcs = 256;
+unsigned int defaultrcs = 257;
 
 /*
  * Default shape of cursor
