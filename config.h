@@ -125,7 +125,7 @@ unsigned int defaultrcs = 257;
  * 6: Bar ("|")
  * 7: Snowman ("☃")
  */
-unsigned int cursorshape = 2;
+unsigned int cursorshape = 0;
 
 /*
  * Default columns and rows numbers

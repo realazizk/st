@@ -1329,7 +1329,13 @@ xdrawcursor(void)
 		case 7: /* st extension: snowman */
 			utf8decode("☃", &g.u, UTF_SIZ);
 		case 0: /* Blinking Block */
+		  if(IS_SET(MODE_BLINK)) {
+		    break;
+		  }
 		case 1: /* Blinking Block (Default) */
+		  if(IS_SET(MODE_BLINK)) {
+		    break;
+		  }
 		case 2: /* Steady Block */
 			g.mode |= term.line[term.c.y][curx].mode & ATTR_WIDE;
 			xdrawglyph(g, term.c.x, term.c.y);
@@ -1644,11 +1650,11 @@ run(void)
 		}
 		if (FD_ISSET(cmdfd, &rfd)) {
 			ttyread();
-			if (blinktimeout) {
-				blinkset = tattrset(ATTR_BLINK);
-				if (!blinkset)
-					MODBIT(term.mode, 0, MODE_BLINK);
-			}
+
+			blinkset = blinktimeout || tattrset(ATTR_BLINK);
+			if (!blinkset)
+			  MODBIT(term.mode, 0, MODE_BLINK);
+
 		}
 
 		if (FD_ISSET(xfd, &rfd))
@@ -1677,8 +1683,14 @@ run(void)
 				XNextEvent(xw.dpy, &ev);
 				if (XFilterEvent(&ev, None))
 					continue;
-				if (handler[ev.type])
-					(handler[ev.type])(&ev);
+				if (handler[ev.type]) {
+				  (handler[ev.type])(&ev);
+				  lastblink = now;
+				  if (IS_SET(MODE_BLINK)) {
+				    MODBIT(term.mode, 0, MODE_BLINK);
+				  }
+				}
+			
 			}
 
 			draw();
