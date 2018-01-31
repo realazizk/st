@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-char font[] = "DejaVu Sans Mono:pixelsize=15:antialias=false:autohint=false";
+char font[] = "DejaVu Sans Mono:pixelsize=15:antialias=true:autohint=false";
 int borderpx = 2;
 #define histsize 2000
 
